@@ -1,0 +1,19 @@
+Program wyszukujacy punkt odbioru przesylki wg wskazanych kryteriow
+
+1. Pobranie danych ze strony https://odbiorwpunkcie.poczta-polska.pl/pliki.php?t=xmlK48S
+	Pobranie z serwera 1 raz na dzien (chache jednodniowy).
+
+2. Konsolowe wyszukiwanie Wersja I
+	Parametry wejsciowe: odbiorwpunkcie.exe -w DOLNOŚLĄSKIE -p dzierżoniowski -g Bielawa -m Bielawa -d poniedziałek -godz 10:55
+		Parametry: -d -godz obowiazkowe
+		Musi wystapic przynajmniej jeden z parametrow -w -p -g -m
+	Parametry wyjsciowe: 
+	Liczba punktow spelniajacych warunki
+	Lista punktow spelniajacych warunki (to samo wojewodztwo/poiwat/gmina/miasto), punkt otwarty w podany dzien i o podanej godzinie
+	
+2. Konsolowe wyszukiwanie Wersja II
+	Parametry wejsciowe: odbiorwpunkcie.exe -y 50.682199 -x 16.608786		
+	Parametry wyjsciowe: punkt bedacy najblizej podanych wspolrzednych xy wg. metryki euklidesowej
+	
+3. Wyjsciowe dane punktu:
+	Nazwa / typ / ulica / miasto / kod / wspolrzedna x /y
