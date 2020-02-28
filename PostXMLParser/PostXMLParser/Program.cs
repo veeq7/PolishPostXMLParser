@@ -13,11 +13,15 @@ namespace PostXMLParser
             XMLData parameters = new XMLData();
             LoadArgsToParameters(args, parameters);
 
-            /*parameters.dzien = "sobota";
-            parameters.godzina = "17:00";
+            /*parameters.dzien = "wtorek";
+            parameters.godzina = "07:00";
             parameters.powiat = "dzierżoniowski";
             XMLReader.Find(parameters);*/
-            if (!error) XMLReader.Find(parameters);
+            if (!error)
+            {
+                XMLReader.Find(parameters);
+                ShowData();
+            }
 
             return 0;
         }
@@ -26,7 +30,7 @@ namespace PostXMLParser
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Za mało parametrów");
+                Console.WriteLine("Za mało argumentów");
                 error = true;
                 return;
             }
@@ -73,10 +77,25 @@ namespace PostXMLParser
 
             if(parameters.wojewodztwo == null && parameters.powiat == null && parameters.gmina == null && parameters.miejscowosc == null)
             {
-                Console.WriteLine("Musisz podać pdzynajmniej jeden z tych argumentów: województwo, powiat, gmiana, miejscowość");
+                Console.WriteLine("Musisz podać przynajmniej jeden z tych argumentów: województwo, powiat, gmiana, miejscowość");
                 error = true;
                 return;
             }
+        }
+
+        public static void ShowData()
+        {
+            foreach(XMLData data in XMLReader.dataList)
+            {
+                Console.WriteLine("Nazwa: " + data.nazwa);
+                Console.WriteLine("Typ: " + data.typ);
+                Console.WriteLine("Ulica: " + data.ulica);
+                Console.WriteLine("Miejscowość: " + data.miejscowosc);
+                Console.WriteLine("Kod: " + data.kod);
+                Console.WriteLine("Współrzędne: " + data.x + ", " + data.y);
+                Console.WriteLine("----------------------------------------------------");
+            }
+            
         }
     }
 }

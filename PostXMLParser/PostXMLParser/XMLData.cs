@@ -15,5 +15,9 @@ namespace PostXMLParser
         public string dzien {get; set;}
         public string godzina {get; set;}
         public string opis { get; set; }
+        public string nazwa { get; set; }
+        public string typ { get; set; }
+        public string ulica { get; set; }
+        public string kod { get; set; }
     }
 }
