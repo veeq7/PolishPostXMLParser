@@ -10,11 +10,11 @@ namespace PostXMLParser
 
         static int Main(string[] args)
         {
-            //LoadParameters(args);
+            LoadParameters(args);
 
-            parameters.dzien = "Poniedziałek";
-            parameters.godzina = "06:00";
-            parameters.powiat = "dzierżoniowski";
+            /*parameters.dzien = "Sobota";
+            parameters.godzina = "17:00";
+            parameters.powiat = "dzierżoniowski";*/
             if(!error) XMLReader.Find();
 
             return 0;

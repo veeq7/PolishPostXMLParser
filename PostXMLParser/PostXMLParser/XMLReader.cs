@@ -23,7 +23,7 @@ namespace PostXMLParser
                 dataa.powiat = level1Element.Attribute("powiat").Value;
                 dataa.gmina = level1Element.Attribute("gmina").Value;
                 dataa.miejscowosc = level1Element.Attribute("miejscowosc").Value;
-                dataa.opis = level1Element.Attribute("opis").Value;
+                dataa.opis = level1Element.Attribute("opis").Value.Remove(level1Element.Attribute("opis").Value.Length - 1);
 
                 if (CheckIfDataMatch(dataa))
                 {
@@ -39,7 +39,8 @@ namespace PostXMLParser
         public static bool CheckIfDataMatch(XMLData data)
         {
             bool location = CheckLocation(data);
-            bool date = Checkdate(data);
+            //bool date = Checkdate(data);
+            bool date = true;
 
 
             if (location == true && date == true) return true;
@@ -92,34 +93,93 @@ namespace PostXMLParser
             int startTime = 0;
             int endTime = 0;
 
-            if (data.opis.Contains("24h"))
+            if (data.opis.ToLower().Contains("24h"))
             {
                 return true;
+            }
+
+            if(data.opis[13].ToString() == "P")
+            {
+                //Console.WriteLine("asd");
             }
             else
             {
                 if (dzien == "poniedziałek" || dzien == "wtorek" || dzien == "środa" || dzien == "czwartek" || dzien == "piątek")
                 {
-                    try
+                    if (data.opis[13] >= '0' && data.opis[13] <= '9')
                     {
-                        if (data.opis[13] >= '0' && data.opis[13] <= '9')
-                        {
-                            startTime += Int32.Parse(data.opis[13].ToString()) * 600;
-                            startTime += Int32.Parse(data.opis[14].ToString()) * 60;
-                            startTime += Int32.Parse(data.opis[16].ToString()) * 10;
-                            startTime += Int32.Parse(data.opis[17].ToString()) * 1;
+                        startTime += Int32.Parse(data.opis[13].ToString()) * 600;
+                        startTime += Int32.Parse(data.opis[14].ToString()) * 60;
+                        startTime += Int32.Parse(data.opis[16].ToString()) * 10;
+                        startTime += Int32.Parse(data.opis[17].ToString()) * 1;
 
-                            endTime += Int32.Parse(data.opis[19].ToString()) * 600;
-                            endTime += Int32.Parse(data.opis[20].ToString()) * 60;
-                            endTime += Int32.Parse(data.opis[22].ToString()) * 10;
-                            endTime += Int32.Parse(data.opis[23].ToString()) * 1;
+                        //
 
-                            //Console.WriteLine(startTime + "-" + endTime);
-                        }
+                        int move = 0;
+
+                        if (data.opis[19] == '-') move = 2;
+                        if (data.opis[19] == ' ') move = 1;
+                        if (data.opis[18] == '0') move = 1;
+
+                        endTime += Int32.Parse(data.opis[19 + move].ToString()) * 600;
+                        endTime += Int32.Parse(data.opis[20 + move].ToString()) * 60;
+                        endTime += Int32.Parse(data.opis[22 + move].ToString()) * 10;
+                        endTime += Int32.Parse(data.opis[23 + move].ToString()) * 1;
                     }
-                    catch
+                }
+                else
+                {
+                    if (dzien == "sobota")
                     {
-                        startTime = 100000;
+                        //Console.WriteLine(data.opis);
+
+                        for (int i = 0; i < data.opis.Length; i++)
+                        {
+                            if (data.opis[i] == '#')
+                            {
+                                try
+                                {
+                                    int move = 0;
+
+                                    if (data.opis[i + 9] == ' ') move = 1;
+
+                                    startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 600;
+                                    startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 60;
+                                    startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 10;
+                                    startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 1;
+
+                                    //
+
+                                    
+
+                                    //if (data.opis[19] == '-') move = 2;
+                                    //if (data.opis[19] == ' ') move = 1;
+                                    //if (data.opis[18] == '0') move = 1;
+
+                                    endTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 600;
+                                    endTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 60;
+                                    endTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 10;
+                                    endTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 1;
+                                }
+                                catch
+                                {
+                                    if(data.opis[i + 9] == 'p' || data.opis[i + 9] == 'N')
+                                    {
+                                        return false;
+                                    }
+
+                                    //Console.WriteLine(data.opis);
+                                }
+
+                                goto end;
+                            }
+                        }
+
+                    end:;
+                    }
+                    else
+                    {
+
                     }
                 }
             }
