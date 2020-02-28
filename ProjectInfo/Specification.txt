@@ -1,0 +1,23 @@
+Specyfikacja:
+odbiorwpunkcie.exe 
+
+Program pozwala na sprawdzenie dostępnych punktów poczty w danym dniu tygodnia i godzienie, oraz w podanym województwie/powiecie/gmienie/mieście
+Drugą funkcją programu jest wyświetlenie najbliższego punktu poczty.
+
+Aby sprawdzić dostępne punkty poczty należy użyć komendy:
+odbiorwpunkcie.exe -w DOLNOŚLĄSKIE -p dzierżoniowski -g Bielawa -m Bielawa -d poniedziałek -godz 10:55
+Parametry: -d -godz są obowiazkowe
+Musi wystapic przynajmniej jeden z parametrow -w -p -g -m
+
+Aby sprawdzić najbliższy punkt poczty należy użyć komendy:
+odbiorwpunkcie.exe -y 50.682199 -x 16.608786
+
+
+
+Plan działania:
+Dodać odczytywanie argumentów
+Odczytywać XML
+Zapisywać argumenty gdzieś w programie
+Sprawdzić z odczytanego pliku xml, jakie elementy się zgadzają z pobranymi parametrami
+Policzyć ile elementów się zgadza i wypisać je
+Dla tych elementów wypisać opis
