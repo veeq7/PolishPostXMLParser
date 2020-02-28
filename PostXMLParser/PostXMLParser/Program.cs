@@ -4,23 +4,25 @@ namespace PostXMLParser
 {
     class Program
     {
-        public static XMLData parameters = new XMLData();
+        
         public static bool findNearest = false;
         public static bool error = false;
 
         static int Main(string[] args)
         {
-            LoadParameters(args);
+            XMLData parameters = new XMLData();
+            LoadArgsToParameters(args, parameters);
 
-            /*parameters.dzien = "Sobota";
+            /*parameters.dzien = "sobota";
             parameters.godzina = "17:00";
-            parameters.powiat = "dzierżoniowski";*/
-            if(!error) XMLReader.Find();
+            parameters.powiat = "dzierżoniowski";
+            XMLReader.Find(parameters);*/
+            if (!error) XMLReader.Find(parameters);
 
             return 0;
         }
 
-        public static void LoadParameters(string[] args)
+        public static void LoadArgsToParameters(string[] args, XMLData parameters)
         {
             if (args.Length < 2)
             {
@@ -31,16 +33,18 @@ namespace PostXMLParser
 
             for(int i = 0; i< args.Length - 1; i += 2)
             {
+                String data = args[i + 1].ToString().ToLower();
+
                 switch (args[i].ToString())
                 {
-                    case "-x": parameters.x = args[i + 1].ToString(); break;
-                    case "-y": parameters.y = args[i + 1].ToString(); break;
-                    case "-w": parameters.wojewodztwo = args[i + 1].ToString(); break;
-                    case "-p": parameters.powiat = args[i + 1].ToString(); break;
-                    case "-g": parameters.gmina = args[i + 1].ToString(); break;
-                    case "-m": parameters.miejscowosc = args[i + 1].ToString(); break;
-                    case "-d": parameters.dzien = args[i + 1].ToString(); break;
-                    case "-godz": parameters.godzina = args[i + 1].ToString(); break;
+                    case "-x": parameters.x = data; break;
+                    case "-y": parameters.y = data; break;
+                    case "-w": parameters.wojewodztwo = data; break;
+                    case "-p": parameters.powiat = data; break;
+                    case "-g": parameters.gmina = data; break;
+                    case "-m": parameters.miejscowosc = data; break;
+                    case "-d": parameters.dzien = data; break;
+                    case "-godz": parameters.godzina = data; break;
 
                     default: Console.WriteLine("Niepoprawny argument: " + args[i].ToString()); error = true; return; 
                 }
