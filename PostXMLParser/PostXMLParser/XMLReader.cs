@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -31,6 +32,22 @@ namespace PostXMLParser
                 dataa.typ = level1Element.Attribute("typ").Value;
                 dataa.ulica = level1Element.Attribute("ulica").Value;
                 dataa.kod = level1Element.Attribute("kod").Value;
+
+                if(Program.findNearest)
+                {
+                    float x1 = float.Parse(dataa.x);
+                    float y1 = float.Parse(dataa.y);
+                    float x2 = float.Parse(parameters.x);
+                    float y2 = float.Parse(parameters.y);
+
+                    dataa.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
+                    Console.WriteLine("x1: " + x1);
+                    Console.WriteLine("y1: " + y1);
+                    Console.WriteLine("x2: " + x2);
+                    Console.WriteLine("y2: " + y2);
+                    Console.WriteLine(dataa.dystans);
+                }
+                
 
                 if (!error && CheckIfDataMatch(dataa, parameters))
                 {

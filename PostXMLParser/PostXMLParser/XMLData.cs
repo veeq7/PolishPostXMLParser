@@ -19,5 +19,6 @@ namespace PostXMLParser
         public string typ { get; set; }
         public string ulica { get; set; }
         public string kod { get; set; }
+        public double dystans { get; set; }
     }
 }
