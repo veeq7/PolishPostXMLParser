@@ -21,3 +21,4 @@ Zapisywać argumenty gdzieś w programie
 Sprawdzić z odczytanego pliku xml, jakie elementy się zgadzają z pobranymi parametrami
 Policzyć ile elementów się zgadza i wypisać je
 Dla tych elementów wypisać opis
+Dodać pobieranie pliku xml z internetu

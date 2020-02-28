@@ -13,6 +13,7 @@ namespace PostXMLParser
         public string gmina { get; set;}
         public string miejscowosc {get; set;}
         public string dzien {get; set;}
-        public string godz {get; set;}
+        public string godzina {get; set;}
+        public string opis { get; set; }
     }
 }
