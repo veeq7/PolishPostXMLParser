@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+//orginał
 
 namespace PostXMLParser
 {
@@ -17,7 +19,6 @@ namespace PostXMLParser
 
         public static void Find(XMLData parameters)
         {
-
             foreach (XElement level1Element in XElement.Load(@"Odbior.xml").Elements("r"))
             {
                 XMLData dataa = new XMLData();
@@ -33,27 +34,24 @@ namespace PostXMLParser
                 dataa.ulica = level1Element.Attribute("ulica").Value;
                 dataa.kod = level1Element.Attribute("kod").Value;
 
-                if(Program.findNearest)
+                if (Program.findNearest)
                 {
-                    float x1 = float.Parse(dataa.x);
-                    float y1 = float.Parse(dataa.y);
-                    float x2 = float.Parse(parameters.x);
-                    float y2 = float.Parse(parameters.y);
+                    float x1 = float.Parse(dataa.x, CultureInfo.InvariantCulture);
+                    float y1 = float.Parse(dataa.y, CultureInfo.InvariantCulture);
+                    float x2 = float.Parse(parameters.x, CultureInfo.InvariantCulture);
+                    float y2 = float.Parse(parameters.y, CultureInfo.InvariantCulture);
 
                     dataa.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
-                    Console.WriteLine("x1: " + x1);
-                    Console.WriteLine("y1: " + y1);
-                    Console.WriteLine("x2: " + x2);
-                    Console.WriteLine("y2: " + y2);
-                    Console.WriteLine(dataa.dystans);
-                }
-                
-
-                if (!error && CheckIfDataMatch(dataa, parameters))
-                {
-                    //Console.WriteLine("w: " + dataa.wojewodztwo + " p: " + dataa.powiat + " g: " + dataa.gmina + " m: " + dataa.miejscowosc);
-                    //Console.WriteLine(dataa.opis);
                     dataList.Add(dataa);
+                }
+                else
+                {
+                    if (!error && CheckIfDataMatch(dataa, parameters))
+                    {
+                        //Console.WriteLine("w: " + dataa.wojewodztwo + " p: " + dataa.powiat + " g: " + dataa.gmina + " m: " + dataa.miejscowosc);
+                        //Console.WriteLine(dataa.opis);
+                        dataList.Add(dataa);
+                    }
                 }
             }
         }
@@ -72,7 +70,7 @@ namespace PostXMLParser
 
         public static bool CheckLocation(XMLData data, XMLData parameters)
         {
-            if(parameters.wojewodztwo != null)
+            if (parameters.wojewodztwo != null)
             {
                 if (!parameters.wojewodztwo.Equals(data.wojewodztwo)) return false;
             }
@@ -121,13 +119,13 @@ namespace PostXMLParser
                 return true;
             }
 
-            if(DataFormatIsExtended(data) && dzien != "sobota" && dzien != "niedziela")
+            if (DataFormatIsExtended(data) && dzien != "sobota" && dzien != "niedziela")
             {
                 SetStartTimeAndEndTimeForExtendedFormat(data, dzien);
             }
             else
             {
-                switch(dzien)
+                switch (dzien)
                 {
                     case "poniedziałek":
                     case "wtorek":
@@ -142,11 +140,11 @@ namespace PostXMLParser
             if (endTime == startTime) return false;
             if (endTime == 0)
             {
-                endTime = 24*60;
+                endTime = 24 * 60;
             }
 
 
-            if(godzina >= startTime && godzina <= endTime)
+            if (godzina >= startTime && godzina <= endTime)
             {
                 return true;
             }
@@ -156,8 +154,6 @@ namespace PostXMLParser
 
         public static bool CheckTimeFormat(XMLData parameters)
         {
-            int godzina = 0;
-
             if (parameters.godzina[0] < '0' || parameters.godzina[0] > '9') return false;
             if (parameters.godzina[0] < '0' || parameters.godzina[1] > '9') return false;
             if (parameters.godzina[0] < '0' || parameters.godzina[3] > '9') return false;
@@ -214,12 +210,12 @@ namespace PostXMLParser
 
                         int move2 = 0;
 
-                        if (data.opis[i + 14 + move ] == ' ') move2 += 1;
-                        if (data.opis[i + 14 + move ] == '0') move2 += 1;
-                        if (data.opis[i + 16 + move ] == ' ') move2 += 1;
+                        if (data.opis[i + 14 + move] == ' ') move2 += 1;
+                        if (data.opis[i + 14 + move] == '0') move2 += 1;
+                        if (data.opis[i + 16 + move] == ' ') move2 += 1;
 
                         move += move2;
-                        
+
                         endTime += Int32.Parse(data.opis[i + 15 + move].ToString()) * 600;
                         endTime += Int32.Parse(data.opis[i + 16 + move].ToString()) * 60;
                         endTime += Int32.Parse(data.opis[i + 18 + move].ToString()) * 10;
@@ -283,7 +279,7 @@ namespace PostXMLParser
 
         public static void SetStartTimeAndEndTimeForExtendedFormat(XMLData data, string dzien)
         {
-            char char1 ='+';
+            char char1 = '+';
             char char2 = '+';
 
             switch (dzien)
