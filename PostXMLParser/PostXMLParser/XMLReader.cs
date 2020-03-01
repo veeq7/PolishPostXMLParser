@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-//orginał
 
 namespace PostXMLParser
 {
@@ -16,6 +15,8 @@ namespace PostXMLParser
         static bool error = false;
         static int startTime = 0;
         static int endTime = 0;
+        static int startTime2 = 0;
+        static int endTime2 = 0;
 
         public static void Find(XMLData parameters)
         {
@@ -145,6 +146,11 @@ namespace PostXMLParser
 
 
             if (godzina >= startTime && godzina <= endTime)
+            {
+                return true;
+            }
+
+            if (godzina >= startTime2 && godzina <= endTime2 && startTime2 != endTime2)
             {
                 return true;
             }
@@ -305,24 +311,15 @@ namespace PostXMLParser
                         startTime += Int32.Parse(data.opis[i + 8 + move].ToString()) * 10;
                         startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 1;
 
-                        //int move2 = 0;
-
-                        //if (data.opis[i + 10 + move] == ' ') move2 += 1;
-                        //if (data.opis[i + 10 + move] == '0') move2 += 1;
-                        //if (data.opis[i + 12 + move] == ' ') move2 += 1;
-
-                        //move += move2;
-
                         endTime += Int32.Parse(data.opis[i + 11 + move].ToString()) * 600;
                         endTime += Int32.Parse(data.opis[i + 12 + move].ToString()) * 60;
                         endTime += Int32.Parse(data.opis[i + 14 + move].ToString()) * 10;
                         endTime += Int32.Parse(data.opis[i + 15 + move].ToString()) * 1;
+
+                        if (data.opis[i + 16 + move] == ',') SetStartTime2AndEndTime2ForExtendedFormat(data, i + 16 + move);
                     }
                     catch
                     {
-                        Console.WriteLine(data.opis);
-                        //Console.WriteLine(data.opis[i + 6].ToString());
-
                         startTime = 100000;
                         endTime = 100000;
                     }
@@ -330,6 +327,40 @@ namespace PostXMLParser
                     return;
                 }
             }
+        }
+
+        public static void SetStartTime2AndEndTime2ForExtendedFormat(XMLData data, int commaPosition)
+        {
+            try
+            {
+                int move = 0;
+
+                startTime2 += Int32.Parse(data.opis[commaPosition + 2].ToString()) * 600;
+                startTime2 += Int32.Parse(data.opis[commaPosition + 3].ToString()) * 60;
+                startTime2 += Int32.Parse(data.opis[commaPosition + 5].ToString()) * 10;
+                startTime2 += Int32.Parse(data.opis[commaPosition + 6].ToString()) * 1;
+
+                //int move2 = 0;
+
+                //if (data.opis[i + 10 + move] == ' ') move2 += 1;
+                //if (data.opis[i + 10 + move] == '0') move2 += 1;
+                //if (data.opis[i + 12 + move] == ' ') move2 += 1;
+
+                //move += move2;
+
+                endTime2 += Int32.Parse(data.opis[commaPosition + 8].ToString()) * 600;
+                endTime2 += Int32.Parse(data.opis[commaPosition + 9].ToString()) * 60;
+                endTime2 += Int32.Parse(data.opis[commaPosition + 11].ToString()) * 10;
+                endTime2 += Int32.Parse(data.opis[commaPosition + 12].ToString()) * 1;
+
+            }
+            catch
+            {
+                startTime = 100000;
+                endTime = 100000;
+            }
+
+            return;
         }
     }
 }
