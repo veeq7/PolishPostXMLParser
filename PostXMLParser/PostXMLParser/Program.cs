@@ -52,7 +52,7 @@ namespace PostXMLParser
 
                 int incrementI = 0;
 
-                while (i + 3 + incrementI < args.Length && args[i + 2 + incrementI][0] != '-')
+                while (i + 2 + incrementI < args.Length && args[i + 2 + incrementI][0] != '-')
                 {
                     data += " ";
                     data += args[i + 2 + incrementI].ToString().ToLower();
@@ -105,8 +105,6 @@ namespace PostXMLParser
                     return;
                 }
             }
-
-
         }
 
         public static void ShowData()
@@ -125,6 +123,8 @@ namespace PostXMLParser
             }
             else
             {
+                Console.WriteLine($"Znaleziono: {XMLReader.dataList.Count} punktów");
+
                 foreach (XMLData data in XMLReader.dataList)
                 {
                     Console.WriteLine("Nazwa: " + data.nazwa);

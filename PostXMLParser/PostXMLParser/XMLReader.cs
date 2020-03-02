@@ -39,8 +39,8 @@ namespace PostXMLParser
                 {
                     if (!error && CheckIfDataMatch(data, parameters))
                     {
-                        //Console.WriteLine("w: " + dataa.wojewodztwo + " p: " + dataa.powiat + " g: " + dataa.gmina + " m: " + dataa.miejscowosc);
-                        //Console.WriteLine(dataa.opis);
+                        //Console.WriteLine("w: " + data.wojewodztwo + " p: " + data.powiat + " g: " + data.gmina + " m: " + data.miejscowosc);
+                        //Console.WriteLine(data.opis);
                         dataList.Add(data);
                     }
                 }
