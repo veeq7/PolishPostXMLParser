@@ -338,20 +338,10 @@ namespace PostXMLParser
         {
             try
             {
-                int move = 0;
-
                 startTime2 += Int32.Parse(data.opis[commaPosition + 2].ToString()) * 600;
                 startTime2 += Int32.Parse(data.opis[commaPosition + 3].ToString()) * 60;
                 startTime2 += Int32.Parse(data.opis[commaPosition + 5].ToString()) * 10;
                 startTime2 += Int32.Parse(data.opis[commaPosition + 6].ToString()) * 1;
-
-                //int move2 = 0;
-
-                //if (data.opis[i + 10 + move] == ' ') move2 += 1;
-                //if (data.opis[i + 10 + move] == '0') move2 += 1;
-                //if (data.opis[i + 12 + move] == ' ') move2 += 1;
-
-                //move += move2;
 
                 endTime2 += Int32.Parse(data.opis[commaPosition + 8].ToString()) * 600;
                 endTime2 += Int32.Parse(data.opis[commaPosition + 9].ToString()) * 60;
