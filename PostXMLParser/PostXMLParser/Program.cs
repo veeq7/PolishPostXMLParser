@@ -155,11 +155,6 @@ namespace PostXMLParser
 
         private static void UnRar(string workingDirectory, string filepath)
         {
-            if (!File.Exists(filepath))
-            {
-                File.Create(filepath);
-            }
-
             var opts = new SharpCompress.Readers.ReaderOptions();
             var encoding = Encoding.GetEncoding(932);
             opts.ArchiveEncoding = new SharpCompress.Common.ArchiveEncoding();
@@ -169,16 +164,9 @@ namespace PostXMLParser
             };
             var tr = SharpCompress.Archives.Zip.ZipArchive.Open(workingDirectory, opts);
 
-            try
+            foreach (var entry in tr.Entries)
             {
-                foreach (var entry in tr.Entries)
-                {
-                    entry.WriteTo(File.Open(filepath, FileMode.Open));
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Z powodu błędu musisz uruchomić program ponownie");
+                entry.WriteToFile(filepath);
             }
         }
 
