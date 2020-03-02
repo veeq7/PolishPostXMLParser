@@ -26,6 +26,8 @@ namespace PostXMLParser
             parameters.godzina = "07:00";
             parameters.powiat = "dzierżoniowski";*/
             //XMLReader.Find(parameters);
+            
+
             if (!error)
             {
                 XMLReader.Find(parameters);
@@ -166,15 +168,23 @@ namespace PostXMLParser
                 return encoding.GetString(data);
             };
             var tr = SharpCompress.Archives.Zip.ZipArchive.Open(workingDirectory, opts);
-            foreach (var entry in tr.Entries)
+
+            try
             {
-                entry.WriteTo(File.Open(filepath, FileMode.Open));
+                foreach (var entry in tr.Entries)
+                {
+                    entry.WriteTo(File.Open(filepath, FileMode.Open));
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Z powodu błędu musisz uruchomić program ponownie");
             }
         }
 
         public static bool CheckIfDownloadIsNecessary()
         {
-            if (!File.Exists("Odbior.xml"))
+            if (!File.Exists("Odbior.xml") || new FileInfo("Odbior.xml").Length == 0)
             {
                 CreateTimeFile();
                 return true;
@@ -190,7 +200,7 @@ namespace PostXMLParser
             {
                 string[] data = new string[1];
                 data = File.ReadAllLines("Time.txt");
-                if (!data[0].ToString().Equals(DateTime.Today.DayOfWeek.ToString()))
+                if (!data[0].ToString().Equals(DateTime.Today.ToString()))
                 {
                     CreateTimeFile();
                     return true;
@@ -210,7 +220,7 @@ namespace PostXMLParser
 
         public static void CreateTimeFile()
         {
-            File.WriteAllText("Time.txt", DateTime.Today.DayOfWeek.ToString());
+            File.WriteAllText("Time.txt", DateTime.Today.ToString());
         }
     }
 }

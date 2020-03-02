@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace PostXMLParser
 {
-    class XMLReader
+    static class XMLReader
     {
         public static List<XMLData> dataList = new List<XMLData>();
         static bool error = false;
@@ -22,39 +22,44 @@ namespace PostXMLParser
         {
             foreach (XElement level1Element in XElement.Load(@"Odbior.xml").Elements("r"))
             {
-                XMLData dataa = new XMLData();
-                dataa.x = level1Element.Attribute("x").Value;
-                dataa.y = level1Element.Attribute("y").Value;
-                dataa.wojewodztwo = level1Element.Attribute("wojewodztwo").Value.ToLower();
-                dataa.powiat = level1Element.Attribute("powiat").Value.ToLower();
-                dataa.gmina = level1Element.Attribute("gmina").Value.ToLower();
-                dataa.miejscowosc = level1Element.Attribute("miejscowosc").Value.ToLower();
-                dataa.opis = level1Element.Attribute("opis").Value.Remove(level1Element.Attribute("opis").Value.Length - 1);
-                dataa.nazwa = level1Element.Attribute("nazwa").Value;
-                dataa.typ = level1Element.Attribute("typ").Value;
-                dataa.ulica = level1Element.Attribute("ulica").Value;
-                dataa.kod = level1Element.Attribute("kod").Value;
+                XMLData data = new XMLData();
+                FillXMLData(data, level1Element);
 
                 if (Program.findNearest)
                 {
-                    float x1 = float.Parse(dataa.x, CultureInfo.InvariantCulture);
-                    float y1 = float.Parse(dataa.y, CultureInfo.InvariantCulture);
+                    float x1 = float.Parse(data.x, CultureInfo.InvariantCulture);
+                    float y1 = float.Parse(data.y, CultureInfo.InvariantCulture);
                     float x2 = float.Parse(parameters.x, CultureInfo.InvariantCulture);
                     float y2 = float.Parse(parameters.y, CultureInfo.InvariantCulture);
 
-                    dataa.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
-                    dataList.Add(dataa);
+                    data.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
+                    dataList.Add(data);
                 }
                 else
                 {
-                    if (!error && CheckIfDataMatch(dataa, parameters))
+                    if (!error && CheckIfDataMatch(data, parameters))
                     {
                         //Console.WriteLine("w: " + dataa.wojewodztwo + " p: " + dataa.powiat + " g: " + dataa.gmina + " m: " + dataa.miejscowosc);
                         //Console.WriteLine(dataa.opis);
-                        dataList.Add(dataa);
+                        dataList.Add(data);
                     }
                 }
             }
+        }
+
+        public static void FillXMLData(XMLData data, XElement level1Element)
+        {
+            data.x = level1Element.Attribute("x").Value;
+            data.y = level1Element.Attribute("y").Value;
+            data.wojewodztwo = level1Element.Attribute("wojewodztwo").Value.ToLower();
+            data.powiat = level1Element.Attribute("powiat").Value.ToLower();
+            data.gmina = level1Element.Attribute("gmina").Value.ToLower();
+            data.miejscowosc = level1Element.Attribute("miejscowosc").Value.ToLower();
+            data.opis = level1Element.Attribute("opis").Value.Remove(level1Element.Attribute("opis").Value.Length - 1);
+            data.nazwa = level1Element.Attribute("nazwa").Value;
+            data.typ = level1Element.Attribute("typ").Value;
+            data.ulica = level1Element.Attribute("ulica").Value;
+            data.kod = level1Element.Attribute("kod").Value;
         }
 
         public static bool CheckIfDataMatch(XMLData data, XMLData parameters)
