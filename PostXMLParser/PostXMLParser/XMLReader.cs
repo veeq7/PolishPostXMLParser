@@ -11,29 +11,38 @@ namespace PostXMLParser
 {
     static class XMLReader
     {
-        public static List<XMLData> dataList = new List<XMLData>();
         static bool error = false;
         static int startTime = 0;
         static int endTime = 0;
         static int startTime2 = 0;
         static int endTime2 = 0;
 
-        public static void Find(XMLData parameters)
+        public static List<XMLData> Find(XMLData parameters)
         {
+            List<XMLData> dataList = new List<XMLData>();
+
             foreach (XElement level1Element in XElement.Load(@"Odbior.xml").Elements("r"))
             {
-                XMLData data = new XMLData();
-                FillXMLData(data, level1Element);
+                XMLData data = new XMLData(level1Element);
 
                 if (Program.findNearest)
                 {
-                    float x1 = float.Parse(data.x, CultureInfo.InvariantCulture);
-                    float y1 = float.Parse(data.y, CultureInfo.InvariantCulture);
-                    float x2 = float.Parse(parameters.x, CultureInfo.InvariantCulture);
-                    float y2 = float.Parse(parameters.y, CultureInfo.InvariantCulture);
+                    try
+                    {
+                        float x1 = float.Parse(data.x, CultureInfo.InvariantCulture);
+                        float y1 = float.Parse(data.y, CultureInfo.InvariantCulture);
+                        float x2 = float.Parse(parameters.x, CultureInfo.InvariantCulture);
+                        float y2 = float.Parse(parameters.y, CultureInfo.InvariantCulture);
 
-                    data.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
-                    dataList.Add(data);
+                        data.dystans = Math.Sqrt(Math.Pow(Math.Abs(x1 - x2), 2) + Math.Pow(Math.Abs(y1 - y2), 2));
+                        dataList.Add(data);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Wprowadziłeś nieprawidłową liczbę!");
+                        dataList = null;
+                        return dataList;
+                    }
                 }
                 else
                 {
@@ -45,21 +54,8 @@ namespace PostXMLParser
                     }
                 }
             }
-        }
 
-        public static void FillXMLData(XMLData data, XElement level1Element)
-        {
-            data.x = level1Element.Attribute("x").Value;
-            data.y = level1Element.Attribute("y").Value;
-            data.wojewodztwo = level1Element.Attribute("wojewodztwo").Value.ToLower();
-            data.powiat = level1Element.Attribute("powiat").Value.ToLower();
-            data.gmina = level1Element.Attribute("gmina").Value.ToLower();
-            data.miejscowosc = level1Element.Attribute("miejscowosc").Value.ToLower();
-            data.opis = level1Element.Attribute("opis").Value.Remove(level1Element.Attribute("opis").Value.Length - 1);
-            data.nazwa = level1Element.Attribute("nazwa").Value;
-            data.typ = level1Element.Attribute("typ").Value;
-            data.ulica = level1Element.Attribute("ulica").Value;
-            data.kod = level1Element.Attribute("kod").Value;
+            return dataList;
         }
 
         public static bool CheckIfDataMatch(XMLData data, XMLData parameters)
@@ -76,12 +72,14 @@ namespace PostXMLParser
 
         public static bool CheckLocation(XMLData data, XMLData parameters)
         {
-            if (parameters.wojewodztwo != null)
-            {
-                if (!parameters.wojewodztwo.Equals(data.wojewodztwo)) return false;
-            }
+            if (!CheckLocation(data.wojewodztwo, parameters.wojewodztwo)) return false;
+            if (!CheckLocation(data.powiat, parameters.powiat)) return false;
+            if (!CheckLocation(data.gmina, parameters.gmina)) return false;
+            if (!CheckLocation(data.miejscowosc, parameters.miejscowosc)) return false;
 
-            if (parameters.powiat != null)
+
+
+            /*if (parameters.powiat != null)
             {
                 if (!parameters.powiat.Equals(data.powiat)) return false;
             }
@@ -94,7 +92,18 @@ namespace PostXMLParser
             if (parameters.miejscowosc != null)
             {
                 if (!parameters.miejscowosc.Equals(data.miejscowosc)) return false;
-            }
+            }*/
+
+            return true;
+        }
+
+        public static bool CheckLocation(string dataLocation, string parameterLocation)
+        {
+            if (string.IsNullOrEmpty(parameterLocation))
+                return true;
+
+            if (!parameterLocation.Equals(dataLocation))
+                return false;
 
             return true;
         }
@@ -108,10 +117,7 @@ namespace PostXMLParser
 
             if (CheckTimeFormat(parameters))
             {
-                godzina += Int32.Parse(parameters.godzina[0].ToString()) * 600;
-                godzina += Int32.Parse(parameters.godzina[1].ToString()) * 60;
-                godzina += Int32.Parse(parameters.godzina[3].ToString()) * 10;
-                godzina += Int32.Parse(parameters.godzina[4].ToString()) * 1;
+                godzina = ReadTime(parameters.godzina.Substring(0, 5));
             }
             else
             {
@@ -186,19 +192,13 @@ namespace PostXMLParser
                 int move = 0;
                 if (data.opis[13] == ' ') move = 1;
 
-                startTime += Int32.Parse(data.opis[13 + move].ToString()) * 600;
-                startTime += Int32.Parse(data.opis[14 + move].ToString()) * 60;
-                startTime += Int32.Parse(data.opis[16 + move].ToString()) * 10;
-                startTime += Int32.Parse(data.opis[17 + move].ToString()) * 1;
+                startTime = ReadTime(data.opis.Substring(13 + move, 5));
 
                 if (data.opis[19] == '-') move = 2;
                 if (data.opis[19] == ' ') move = 1;
                 if (data.opis[18] == '0') move = 1;
 
-                endTime += Int32.Parse(data.opis[19 + move].ToString()) * 600;
-                endTime += Int32.Parse(data.opis[20 + move].ToString()) * 60;
-                endTime += Int32.Parse(data.opis[22 + move].ToString()) * 10;
-                endTime += Int32.Parse(data.opis[23 + move].ToString()) * 1;
+                endTime = ReadTime(data.opis.Substring(19 + move, 5));
             }
         }
 
@@ -211,26 +211,17 @@ namespace PostXMLParser
                     try
                     {
                         int move = 0;
-
                         if (data.opis[i + 9] == ' ') move = 1;
 
-                        startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 600;
-                        startTime += Int32.Parse(data.opis[i + 10 + move].ToString()) * 60;
-                        startTime += Int32.Parse(data.opis[i + 12 + move].ToString()) * 10;
-                        startTime += Int32.Parse(data.opis[i + 13 + move].ToString()) * 1;
+                        startTime = ReadTime(data.opis.Substring(i + 9 + move, 5));
 
                         int move2 = 0;
-
                         if (data.opis[i + 14 + move] == ' ') move2 += 1;
                         if (data.opis[i + 14 + move] == '0') move2 += 1;
                         if (data.opis[i + 16 + move] == ' ') move2 += 1;
-
                         move += move2;
 
-                        endTime += Int32.Parse(data.opis[i + 15 + move].ToString()) * 600;
-                        endTime += Int32.Parse(data.opis[i + 16 + move].ToString()) * 60;
-                        endTime += Int32.Parse(data.opis[i + 18 + move].ToString()) * 10;
-                        endTime += Int32.Parse(data.opis[i + 19 + move].ToString()) * 1;
+                        endTime = ReadTime(data.opis.Substring(i + 15 + move, 5));
                     }
                     catch
                     {
@@ -251,7 +242,8 @@ namespace PostXMLParser
                 {
                     try
                     {
-                        if (data.opis[i + 21] == 'N' || data.opis[i + 21] == 'p' || data.opis[i + 21] == 'S' || data.opis[i + 21] == 'n')
+                        //Jeżeli napis to: Nieczynne/nieczynny/Sprawdź w sklepie//placówka nieczynna
+                        if (data.opis[i + 21] == 'N' || data.opis[i + 21] == 'n' || data.opis[i + 21] == 'S' || data.opis[i + 21] == 'p')
                         {
                             return;
                         }
@@ -259,23 +251,15 @@ namespace PostXMLParser
                         int move = 0;
                         if (data.opis[i + 9] == ' ') move = 1;
 
-                        startTime += Int32.Parse(data.opis[i + 21 + move].ToString()) * 600;
-                        startTime += Int32.Parse(data.opis[i + 22 + move].ToString()) * 60;
-                        startTime += Int32.Parse(data.opis[i + 24 + move].ToString()) * 10;
-                        startTime += Int32.Parse(data.opis[i + 25 + move].ToString()) * 1;
+                        startTime = ReadTime(data.opis.Substring(i + 21 + move, 5));
 
                         int move2 = 0;
-
                         if (data.opis[i + 26 + move] == ' ') move2 += 1;
                         if (data.opis[i + 26 + move] == '0') move2 += 1;
                         if (data.opis[i + 28 + move] == ' ') move2 += 1;
-
                         move += move2;
 
-                        endTime += Int32.Parse(data.opis[i + 27 + move].ToString()) * 600;
-                        endTime += Int32.Parse(data.opis[i + 28 + move].ToString()) * 60;
-                        endTime += Int32.Parse(data.opis[i + 30 + move].ToString()) * 10;
-                        endTime += Int32.Parse(data.opis[i + 31 + move].ToString()) * 1;
+                        endTime = ReadTime(data.opis.Substring(i + 27 + move, 5));
                     }
                     catch
                     {
@@ -311,15 +295,8 @@ namespace PostXMLParser
                         int move = 0;
                         if (dzien == "poniedziałek" || dzien == "czwartek") move = 1;
 
-                        startTime += Int32.Parse(data.opis[i + 5 + move].ToString()) * 600;
-                        startTime += Int32.Parse(data.opis[i + 6 + move].ToString()) * 60;
-                        startTime += Int32.Parse(data.opis[i + 8 + move].ToString()) * 10;
-                        startTime += Int32.Parse(data.opis[i + 9 + move].ToString()) * 1;
-
-                        endTime += Int32.Parse(data.opis[i + 11 + move].ToString()) * 600;
-                        endTime += Int32.Parse(data.opis[i + 12 + move].ToString()) * 60;
-                        endTime += Int32.Parse(data.opis[i + 14 + move].ToString()) * 10;
-                        endTime += Int32.Parse(data.opis[i + 15 + move].ToString()) * 1;
+                        startTime = ReadTime(data.opis.Substring(i + 5 + move, 5));
+                        endTime = ReadTime(data.opis.Substring(i + 11 + move, 5));
 
                         if (data.opis[i + 16 + move] == ',') SetStartTime2AndEndTime2ForExtendedFormat(data, i + 16 + move);
                     }
@@ -338,16 +315,8 @@ namespace PostXMLParser
         {
             try
             {
-                startTime2 += Int32.Parse(data.opis[commaPosition + 2].ToString()) * 600;
-                startTime2 += Int32.Parse(data.opis[commaPosition + 3].ToString()) * 60;
-                startTime2 += Int32.Parse(data.opis[commaPosition + 5].ToString()) * 10;
-                startTime2 += Int32.Parse(data.opis[commaPosition + 6].ToString()) * 1;
-
-                endTime2 += Int32.Parse(data.opis[commaPosition + 8].ToString()) * 600;
-                endTime2 += Int32.Parse(data.opis[commaPosition + 9].ToString()) * 60;
-                endTime2 += Int32.Parse(data.opis[commaPosition + 11].ToString()) * 10;
-                endTime2 += Int32.Parse(data.opis[commaPosition + 12].ToString()) * 1;
-
+                startTime2 = ReadTime(data.opis.Substring(commaPosition + 2, 5));
+                endTime2 = ReadTime(data.opis.Substring(commaPosition + 8, 5));
             }
             catch
             {
@@ -357,5 +326,18 @@ namespace PostXMLParser
 
             return;
         }
+
+        private static int ReadTime(string time)
+        {
+            int returnTime = 0;
+
+            returnTime += Int32.Parse(time[0].ToString()) * 600;
+            returnTime += Int32.Parse(time[1].ToString()) * 60;
+            returnTime += Int32.Parse(time[3].ToString()) * 10;
+            returnTime += Int32.Parse(time[4].ToString()) * 1;
+
+            return returnTime;
+        }
+
     }
 }

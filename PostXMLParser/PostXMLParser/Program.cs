@@ -11,13 +11,14 @@ namespace PostXMLParser
     class Program
     {
         public static bool findNearest = false;
-        public static bool error = false;
 
         static int Main(string[] args)
         {
-            XMLData parameters = new XMLData();
-            LoadArgsToParameters(args, parameters);
+            bool error = false;
             DownloadXMLFile();
+            XMLData parameters = new XMLData();
+            error = LoadArgsToParametersReturnError(args, parameters);
+            
 
             /*findNearest = true;
             parameters.x = "55.55";
@@ -26,24 +27,26 @@ namespace PostXMLParser
             parameters.godzina = "07:00";
             parameters.powiat = "dzierżoniowski";*/
             //XMLReader.Find(parameters);
-            
 
-            if (!error)
-            {
-                XMLReader.Find(parameters);
-                ShowData();
-            }
 
+            if (error)
+                return 0;
+
+            List<XMLData> dataList = XMLReader.Find(parameters);
+            if (dataList == null) return 0;
+            ShowData(dataList);
             return 0;
         }
 
-        public static void LoadArgsToParameters(string[] args, XMLData parameters)
+        /// <summary>
+        /// Return error whenever args are incorrect
+        /// </summary>
+        public static bool LoadArgsToParametersReturnError(string[] args, XMLData parameters)
         {
             if (args.Length < 2)
             {
                 Console.WriteLine("Za mało argumentów");
-                error = true;
-                return;
+                return true;
             }
 
             for (int i = 0; i < args.Length - 1; i += 2)
@@ -70,7 +73,7 @@ namespace PostXMLParser
                     case "-d": parameters.dzien = data; break;
                     case "-godz": parameters.godzina = data; break;
 
-                    default: Console.WriteLine("Niepoprawny argument: " + args[i].ToString()); error = true; return;
+                    default: Console.WriteLine("Niepoprawny argument: " + args[i].ToString()); return true;
                 }
 
                 i += incrementI;
@@ -87,31 +90,30 @@ namespace PostXMLParser
                 if (parameters.dzien == null)
                 {
                     Console.WriteLine("Musisz podać dzień!");
-                    error = true;
-                    return;
+                    return true;
                 }
 
                 if (parameters.godzina == null)
                 {
                     Console.WriteLine("Musisz podać godzinę!");
-                    error = true;
-                    return;
+                    return true;
                 }
 
                 if (parameters.wojewodztwo == null && parameters.powiat == null && parameters.gmina == null && parameters.miejscowosc == null)
                 {
                     Console.WriteLine("Musisz podać przynajmniej jeden z tych argumentów: województwo, powiat, gmiana, miejscowość");
-                    error = true;
-                    return;
+                    return true;
                 }
             }
+
+            return false;
         }
 
-        public static void ShowData()
+        public static void ShowData(List<XMLData> dataList)
         {
             if (findNearest)
             {
-                List<XMLData> data = XMLReader.dataList.OrderBy(o => o.dystans).ToList();
+                List<XMLData> data = dataList.OrderBy(o => o.dystans).ToList();
                 Console.WriteLine("Nazwa: " + data[0].nazwa);
                 Console.WriteLine("Typ: " + data[0].typ);
                 Console.WriteLine("Ulica: " + data[0].ulica);
@@ -123,9 +125,9 @@ namespace PostXMLParser
             }
             else
             {
-                Console.WriteLine($"Znaleziono: {XMLReader.dataList.Count} punktów");
+                Console.WriteLine($"Znaleziono: {dataList.Count} punktów");
 
-                foreach (XMLData data in XMLReader.dataList)
+                foreach (XMLData data in dataList)
                 {
                     Console.WriteLine("Nazwa: " + data.nazwa);
                     Console.WriteLine("Typ: " + data.typ);
