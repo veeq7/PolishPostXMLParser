@@ -1,0 +1,3 @@
+Nauczyłem się pobierać dane z internetu, odczytywać plik xml, rozpakowywać plik .zip, 
+pobierania parametrów do programu przy użyciu konsoli cmd, pobierać datę z systemu,
+dobrze pisać kod(starać się nie powtarzać tych samych rzeczy 2 razy w kodzie, oraz nie używać statycznych zmiannych jeśli się da)
