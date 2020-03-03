@@ -139,7 +139,7 @@ namespace PostXMLParser
                 }
             }
         }
-
+         
         public static void DownloadXMLFile()
         {
             if (CheckIfDownloadIsNecessary())

@@ -77,23 +77,6 @@ namespace PostXMLParser
             if (!CheckLocation(data.gmina, parameters.gmina)) return false;
             if (!CheckLocation(data.miejscowosc, parameters.miejscowosc)) return false;
 
-
-
-            /*if (parameters.powiat != null)
-            {
-                if (!parameters.powiat.Equals(data.powiat)) return false;
-            }
-
-            if (parameters.gmina != null)
-            {
-                if (!parameters.gmina.Equals(data.gmina)) return false;
-            }
-
-            if (parameters.miejscowosc != null)
-            {
-                if (!parameters.miejscowosc.Equals(data.miejscowosc)) return false;
-            }*/
-
             return true;
         }
 
